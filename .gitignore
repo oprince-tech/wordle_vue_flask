@@ -1,4 +1,9 @@
 /venv
 /node_modules
 __pycache__
+*_cache
 combinations.npy
+.coverage
+.python-version
+.tox
+htmlcov

@@ -10,8 +10,35 @@ def open_words_len_5(file: str) -> list:
         return lines
 
 
+def combinations_apply_axis(combos):
+    combinations = np.apply_along_axis(''.join, 1, combos)
+    return combinations
+
+
+def combinations_pad(words_len_5, combos):
+    combinations = np.pad(
+        combos, (
+            0, abs(
+                len(words_len_5) - combos.size,
+            ),
+        ), 'constant',
+    )
+    return combinations
+
+
+def find_matches(words_len_5, combos):
+    matches = np.intersect1d(words_len_5, combos)
+    matches = matches[
+        np.where(matches == words_len_5[:, None])[1]  # type: ignore
+    ]
+    return matches
+
+
 def main(greys: list, yellows: list, greens) -> list:
-    words_len_5 = open_words_len_5('wiki-100k-strip-no-dups.txt')
+    words_len_5_list = open_words_len_5('wiki-100k-strip-no-dups.txt')
+    words_len_5_np = np.asarray(words_len_5_list)
+    # words_len_5_np
+    # array(['WHICH', 'THEIR',' WOULD']
     combinations = np.load('combinations.npy')
     if greys:
         for grey in greys:
@@ -35,20 +62,12 @@ def main(greys: list, yellows: list, greens) -> list:
                     combinations[:, green[1]] == green[0],
                 )
             ]
+    # combinations
+    # array([['A', 'B', 'C', 'D', 'E'],
+    #        ['F', 'G', 'H', 'I', 'J']])
+    combinations = combinations_apply_axis(combinations)
+    combinations = combinations_pad(words_len_5_np, combinations)
+    matches = find_matches(words_len_5_np, combinations)
 
-    words_len_5 = np.asarray(words_len_5)
-    combinations = np.apply_along_axis(''.join, 1, combinations)
-    combinations = np.pad(
-        combinations, (
-            0, abs(
-                len(words_len_5) - combinations.size,
-                # words_len_5.shape[0] - combinations.shape[0],
-            ),
-        ), 'constant',
-    )
-    matches = np.intersect1d(words_len_5, combinations)
-    matches = matches[
-        np.where(matches == words_len_5[:, None])[1]  # type: ignore
-    ]
     matches_list = matches.tolist()
     return matches_list
