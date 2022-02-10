@@ -2,7 +2,7 @@
   <meta charset="UTF-8">
   <div class="container">
     <Board @updateKeys="updateKeys" ref="board"/>
-    <Keyboard ref="keyboard"/>
+    <Keyboard @updateTiles="updateTiles" ref="keyboard"/>
     <SubmitClear @submitAction="submitLetters" @clearAction="clearKeys"/>
     <div id="loading" v-if="loading">
       <p>Loading...</p>
@@ -57,6 +57,13 @@ export default {
       const letter = keyboardLetters.filter(x => x.text === tile.text.toUpperCase())
       if (letter[0]) {
         letter[0].state = tile.state
+      }
+    },
+    updateTiles(key) {
+      const tiles = this.$refs.board.tiles
+      const tile = tiles.filter(x => x.text === key.text.toLowerCase())
+      if (tile[0]) {
+        tile[0].state = key.state
       }
     }
   },

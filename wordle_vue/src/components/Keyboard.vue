@@ -13,17 +13,15 @@
     methods: {
       cycleKey(id) {
         let letter = this.letters[id]
-        if (letter.state === '') {
-          letter.state = 'yellow'
-        } else if (letter.state === 'yellow') {
-          letter.state = 'green'
-        } else if (letter.state === 'green') {
+        if (letter.state !== 'miss') {
           letter.state = 'miss'
-        } else if (letter.state === 'miss') {
+        } else {
           letter.state = ''
         }
+        this.$emit('updateTiles', letter)
       }
     },
+    emits: ['updateTiles'],
     data() {
       return {
         letters: [
